@@ -2,8 +2,19 @@
 <resources>
     <color name="colorPrimary">#7b52b2</color>
     <color name="colorPrimaryDark">#674596</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="colorAccent">#f77327</color>
 
-    <!--Sign In Page-->
+    <!--Sign In Screen-->
     <color name="signInButtonTextColor">#ffffff</color>
+
+    <!--Notes Screen-->
+    <color name="floatingButtonColor">#f77327</color>
+    <color name="floatingButtonRippleColor">#d35004</color>
+
+    <!--Note Details Color-->
+    <color name="noteTitleTextColor">#000000</color>
+    <color name="noteTitleHintColor">#191919</color>
+
+    <color name="noteBodyTextColor">#232323</color>
+    <color name="noteBodyHintColor">#494949</color>
 </resources>

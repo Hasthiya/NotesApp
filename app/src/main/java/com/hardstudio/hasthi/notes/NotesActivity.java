@@ -2,6 +2,7 @@ package com.hardstudio.hasthi.notes;
 
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -15,6 +16,7 @@ public class NotesActivity extends AppCompatActivity {
     Button button;
     FirebaseAuth mAuth;
     FirebaseAuth.AuthStateListener mAuthStateListener;
+    FloatingActionButton newNoteButton;
 
     @Override
     protected void onStart() {
@@ -28,6 +30,7 @@ public class NotesActivity extends AppCompatActivity {
         setContentView(R.layout.activity_notes);
 
         button = findViewById(R.id.signOutButton);
+        newNoteButton = findViewById(R.id.newNoteButton);
         mAuth = FirebaseAuth.getInstance();
 
         mAuthStateListener = new FirebaseAuth.AuthStateListener() {
@@ -46,5 +49,13 @@ public class NotesActivity extends AppCompatActivity {
                     mAuth.signOut();
             }
         });
+
+        newNoteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(NotesActivity.this, NoteDetailsActivity.class));
+            }
+        });
+
     }
 }
