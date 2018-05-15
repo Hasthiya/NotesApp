@@ -7,11 +7,24 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.hardstudio.hasthi.notes.Adapters.NotesAdapter;
+import com.hardstudio.hasthi.notes.Models.NoteDetails;
+import com.hardstudio.hasthi.notes.Models.User;
+
+import java.util.ArrayList;
 
 public class NotesActivity extends AppCompatActivity {
 
@@ -20,6 +33,12 @@ public class NotesActivity extends AppCompatActivity {
     FirebaseAuth.AuthStateListener mAuthStateListener;
     FloatingActionButton newNoteButton;
     boolean doubleBackToExitPressedOnce = false;
+
+    private ArrayList<NoteDetails> Notes;
+    private DatabaseReference mDatabase;
+    public User user;
+    private NotesAdapter adapter;
+    private RecyclerView notesRecyclerView;
 
     @Override
     protected void onStart() {
@@ -54,7 +73,11 @@ public class NotesActivity extends AppCompatActivity {
 
         button = findViewById(R.id.signOutButton);
         newNoteButton = findViewById(R.id.newNoteButton);
+        mDatabase = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
+        if(mAuth.getCurrentUser() != null){
+            user = new User(mAuth.getCurrentUser().getUid());
+        }
 
         mAuthStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -80,5 +103,35 @@ public class NotesActivity extends AppCompatActivity {
             }
         });
 
+        getData(user.getId());
+
+
+
+
+
+    }
+
+    private void getData(String userId){
+        Notes = new ArrayList<>();
+        DatabaseReference notesDatabaseRef = mDatabase.child("users").child(userId).child("notes");
+        notesDatabaseRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Notes.clear();
+                for (DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
+                    Notes.add(postSnapshot.getValue(NoteDetails.class));
+                }
+                notesRecyclerView = findViewById(R.id.notesRecyclerView);
+                notesRecyclerView.setLayoutManager(new LinearLayoutManager(NotesActivity.this));
+                adapter = new NotesAdapter(getApplicationContext(), Notes);
+                notesRecyclerView.setAdapter(adapter);
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Log.e("The read failed: " ,databaseError.getMessage());
+            }
+        });
     }
 }

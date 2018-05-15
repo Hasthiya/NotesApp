@@ -17,4 +17,7 @@
 
     <color name="noteBodyTextColor">#232323</color>
     <color name="noteBodyHintColor">#494949</color>
+
+    <!--note Adapter-->
+    <color name="iconTint">#c4c4c4</color>
 </resources>
