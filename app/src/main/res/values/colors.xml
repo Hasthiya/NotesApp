@@ -20,4 +20,5 @@
 
     <!--note Adapter-->
     <color name="iconTint">#c4c4c4</color>
+    <color name="textDeleteColor">#ffffff</color>
 </resources>

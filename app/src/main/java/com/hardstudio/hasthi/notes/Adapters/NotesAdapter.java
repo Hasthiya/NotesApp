@@ -62,6 +62,8 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
             @Override
             public boolean onLongClick(View view) {
                 holder.noteBlock.setBackgroundColor(context.getColor(R.color.colorAccent));
+                holder.noteBody.setTextColor(context.getColor(R.color.textDeleteColor));
+                holder.noteTitle.setTextColor(context.getColor(R.color.textDeleteColor));
                 AlertDialog.Builder alert = new AlertDialog.Builder(
                         context);
                 alert.setCancelable(false);
@@ -84,6 +86,8 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
                         });
                         dialog.dismiss();
                         holder.noteBlock.setBackgroundColor(Color.TRANSPARENT);
+                        holder.noteBody.setTextColor(context.getColor(R.color.noteBodyHintColor));
+                        holder.noteTitle.setTextColor(context.getColor(R.color.noteTitleTextColor));
 
                     }
                 });
@@ -94,6 +98,8 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
 
                         dialog.dismiss();
                         holder.noteBlock.setBackgroundColor(Color.TRANSPARENT);
+                        holder.noteBody.setTextColor(context.getColor(R.color.noteBodyHintColor));
+                        holder.noteTitle.setTextColor(context.getColor(R.color.noteTitleTextColor));
                     }
                 });
 

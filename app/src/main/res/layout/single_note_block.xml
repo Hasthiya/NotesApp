@@ -18,19 +18,19 @@
         app:layout_constraintTop_toTopOf="parent"/>
 
     <TextView
-    android:layout_marginTop="10dp"
-    android:layout_marginRight="10dp"
-    android:id="@+id/noteAdapterBlockTitle"
-    android:layout_width="0dp"
-    android:layout_height="wrap_content"
-    android:maxLines="1"
-    android:ellipsize="end"
-    android:text="Title"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="10dp"
+        android:id="@+id/noteAdapterBlockTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:text="Title"
         android:textColor="@color/noteTitleTextColor"
-    android:textStyle="bold"
-    app:layout_constraintLeft_toRightOf="@+id/noteIcon"
-    app:layout_constraintRight_toRightOf="parent"
-    app:layout_constraintTop_toTopOf="parent"/>
+        android:textStyle="bold"
+        app:layout_constraintLeft_toRightOf="@+id/noteIcon"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
 
 
     <TextView
