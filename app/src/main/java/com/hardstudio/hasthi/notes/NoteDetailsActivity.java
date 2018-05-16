@@ -1,7 +1,10 @@
 package com.hardstudio.hasthi.notes;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Handler;
+import android.provider.MediaStore;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -11,16 +14,23 @@ import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.hardstudio.hasthi.notes.Models.NoteDetails;
 import com.hardstudio.hasthi.notes.Models.User;
 import com.hardstudio.hasthi.notes.Util.Constants;
+import com.squareup.picasso.Picasso;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -43,6 +53,12 @@ public class NoteDetailsActivity extends AppCompatActivity {
     ValueEventListener listener;
     DatabaseReference notesDatabaseRef;
     ConstraintLayout noteDetailsMainLayout;
+    private ImageView noteImage;
+    private StorageReference storageReference;
+    private ProgressDialog progressDialog;
+    private String ImageURL;
+
+    private static final int CAMERA_REQUEST_CODE = 1;
 
 
     @Override
@@ -56,12 +72,16 @@ public class NoteDetailsActivity extends AppCompatActivity {
 
         final Intent intent = getIntent();
         processID = intent.getIntExtra(Constants.NOTE_PROCESS, 0);
-
+        progressDialog = new ProgressDialog(this);
+        storageReference = FirebaseStorage.getInstance().getReference();
+        noteImage= findViewById(R.id.noteImage);
         camButton = findViewById(R.id.camButton);
         camButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //todo camera activity
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                startActivityForResult(intent, CAMERA_REQUEST_CODE);
+
             }
         });
 
@@ -80,6 +100,33 @@ public class NoteDetailsActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode == CAMERA_REQUEST_CODE && resultCode == RESULT_OK){
+
+            progressDialog.show();
+
+            Uri uri = data.getData();
+
+            StorageReference filepath = storageReference.child("photos").child(uri.getLastPathSegment());
+
+            filepath.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    progressDialog.dismiss();
+
+                    Uri downloadUri = taskSnapshot.getDownloadUrl();
+                    ImageURL = downloadUri.toString();
+                    Picasso.get().load(downloadUri).into(noteImage);
+
+                    Toast.makeText(NoteDetailsActivity.this,  "Finish Uploading", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+    }
+
+    @Override
     public void onBackPressed() {
         if(!noteTitle.getText().toString().equalsIgnoreCase("") && !noteBody.getText().toString().equalsIgnoreCase("") ){
             isNoteEmpty = false;
@@ -94,9 +141,9 @@ public class NoteDetailsActivity extends AppCompatActivity {
 
             if(!noteTitle.getText().toString().equalsIgnoreCase("") && !noteBody.getText().toString().equalsIgnoreCase("") ){
                 if(processID == 2000) {
-                    addNewNote(user.getId(), noteTitle.getText().toString(), noteBody.getText().toString(), Calendar.getInstance().getTime());
+                    addNewNote(user.getId(), noteTitle.getText().toString(), noteBody.getText().toString(), Calendar.getInstance().getTime(), ImageURL);
                 } else if(processID == 1000) {
-                    editNote(user.getId(), intent.getStringExtra(Constants.NOTE_ID_KEY), noteTitle.getText().toString(), noteBody.getText().toString(), Calendar.getInstance().getTime());
+                    editNote(user.getId(), intent.getStringExtra(Constants.NOTE_ID_KEY), noteTitle.getText().toString(), noteBody.getText().toString(), Calendar.getInstance().getTime(), ImageURL);
                 }
             }
             if (notesDatabaseRef != null && listener != null) {
@@ -124,17 +171,17 @@ public class NoteDetailsActivity extends AppCompatActivity {
     }
 
 
-    private void addNewNote(String userId, String title, String body, Date date) {
+    private void addNewNote(String userId, String title, String body, Date date, String imageURL) {
         DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy", Locale.UK);
         notesDatabaseRef = mDatabase.child("users").child(userId).child("notes").push();
-        NoteDetails noteDetails = new NoteDetails(title, body, formatter.format(date));
+        NoteDetails noteDetails = new NoteDetails(title, body, formatter.format(date), imageURL);
         notesDatabaseRef.setValue(noteDetails);
     }
 
-    private void editNote(String userId,String noteID, String title, String body, Date date){
+    private void editNote(String userId,String noteID, String title, String body, Date date, String imageURL){
         DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy", Locale.UK);
         notesDatabaseRef = mDatabase.child("users").child(userId).child("notes").child(noteID);
-        NoteDetails noteDetails = new NoteDetails(title, body, formatter.format(date));
+        NoteDetails noteDetails = new NoteDetails(title, body, formatter.format(date), imageURL);
         notesDatabaseRef.setValue(noteDetails);
     }
 
@@ -148,6 +195,8 @@ public class NoteDetailsActivity extends AppCompatActivity {
                     noteDetails.setNoteID(dataSnapshot.getKey());
                     noteTitle.setText(noteDetails.getTitle());
                     noteBody.setText(noteDetails.getBody());
+                    ImageURL = noteDetails.getImageUrl();
+                    Picasso.get().load(noteDetails.getImageUrl()).into(noteImage);
                 }
             }
 

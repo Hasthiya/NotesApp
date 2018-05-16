@@ -11,6 +11,7 @@ public class NoteDetails {
     private String body;
     private String date;
     private String noteID;
+    private String imageUrl;
 
     public String getNoteID() {
         return noteID;
@@ -23,10 +24,11 @@ public class NoteDetails {
     public NoteDetails() {
     }
 
-    public NoteDetails(String title, String body, String date) {
+    public NoteDetails(String title, String body, String date, String imageUrl) {
         this.title = title;
         this.body = body;
         this.date = date;
+        this.imageUrl = imageUrl;
     }
 
     public String getTitle() {
@@ -51,5 +53,13 @@ public class NoteDetails {
 
     public void setDate(String date) {
         this.date = date;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }
