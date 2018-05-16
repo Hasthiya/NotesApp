@@ -64,6 +64,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
                 holder.noteBlock.setBackgroundColor(context.getColor(R.color.colorAccent));
                 AlertDialog.Builder alert = new AlertDialog.Builder(
                         context);
+                alert.setCancelable(false);
                 alert.setTitle("Delete");
                 alert.setMessage("Are you sure to delete this note?");
                 alert.setPositiveButton("YES", new DialogInterface.OnClickListener() {
