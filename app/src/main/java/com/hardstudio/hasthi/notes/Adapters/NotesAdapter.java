@@ -102,10 +102,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
                         holder.noteTitle.setTextColor(context.getColor(R.color.noteTitleTextColor));
                     }
                 });
-
                 alert.show();
-
-                Toast.makeText(context, "Long Press", Toast.LENGTH_SHORT).show();
                 return true;
             }
         });

@@ -1,7 +1,9 @@
 package com.hardstudio.hasthi.notes;
 
 import android.content.Intent;
+import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -34,6 +36,9 @@ public class NoteDetailsActivity extends AppCompatActivity {
     private FloatingActionButton camButton;
     public NoteDetails noteDetails;
     int processID;
+    boolean doubleBackToExitPressedOnce = false;
+    boolean isNoteEmpty = true;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,11 +56,7 @@ public class NoteDetailsActivity extends AppCompatActivity {
         camButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(processID == 2000) {
-                    addNewNote(user.getId(), noteTitle.getText().toString(), noteBody.getText().toString(), Calendar.getInstance().getTime());
-                } else if(processID == 1000) {
-                    editNote(user.getId(), intent.getStringExtra(Constants.NOTE_ID_KEY), noteTitle.getText().toString(), noteBody.getText().toString(), Calendar.getInstance().getTime());
-                }
+                //todo camera activity
             }
         });
 
@@ -71,8 +72,44 @@ public class NoteDetailsActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
+        if(!noteTitle.getText().toString().equalsIgnoreCase("") && !noteBody.getText().toString().equalsIgnoreCase("") ){
+            isNoteEmpty = false;
+        } else {
+            isNoteEmpty = true;
+        }
+        if (doubleBackToExitPressedOnce) {
+            super.onBackPressed();
+
+            final Intent intent = getIntent();
+            processID = intent.getIntExtra(Constants.NOTE_PROCESS, 0);
+
+            if(!noteTitle.getText().toString().equalsIgnoreCase("") && !noteBody.getText().toString().equalsIgnoreCase("") ){
+                if(processID == 2000) {
+                    addNewNote(user.getId(), noteTitle.getText().toString(), noteBody.getText().toString(), Calendar.getInstance().getTime());
+                } else if(processID == 1000) {
+                    editNote(user.getId(), intent.getStringExtra(Constants.NOTE_ID_KEY), noteTitle.getText().toString(), noteBody.getText().toString(), Calendar.getInstance().getTime());
+                }
+            }
+            return;
+        }
+
+        this.doubleBackToExitPressedOnce = true;
+
+        if(isNoteEmpty){
+            Snackbar.make(findViewById(R.id.noteDetailsMainLayout), "Note is INCOMPLETE and will NOT SAVE", Snackbar.LENGTH_SHORT).show();
+        } else {
+            Snackbar.make(findViewById(R.id.noteDetailsMainLayout), "Please click BACK again to SAVE and exit", Snackbar.LENGTH_SHORT).show();
+        }
+
+        new Handler().postDelayed(new Runnable() {
+
+            @Override
+            public void run() {
+                doubleBackToExitPressedOnce=false;
+            }
+        }, 2000);
     }
+
 
     private void addNewNote(String userId, String title, String body, Date date) {
         DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy", Locale.UK);
