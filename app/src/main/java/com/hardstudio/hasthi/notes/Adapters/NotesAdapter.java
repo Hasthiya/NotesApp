@@ -12,7 +12,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -48,7 +47,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
     @Override
     public void onBindViewHolder(final NotesAdapter.ViewHolder holder, final int position) {
         holder.noteTitle.setText(note.get(position).getTitle());
-        holder.noteBody.setText(note.get(position).getBody());
+        holder.noteBody.setText(note.get(position).getDate()+" - "+note.get(position).getBody());
         holder.noteBlock.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

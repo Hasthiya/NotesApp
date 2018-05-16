@@ -2,12 +2,14 @@ package com.hardstudio.hasthi.notes;
 
 import android.content.Intent;
 import android.os.Handler;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.EditText;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -40,6 +42,7 @@ public class NoteDetailsActivity extends AppCompatActivity {
     boolean isNoteEmpty = true;
     ValueEventListener listener;
     DatabaseReference notesDatabaseRef;
+    ConstraintLayout noteDetailsMainLayout;
 
 
     @Override
@@ -66,7 +69,11 @@ public class NoteDetailsActivity extends AppCompatActivity {
         if(firebaseAuth.getCurrentUser() != null){
             user = new User(firebaseAuth.getCurrentUser().getUid());
         }
-        if(processID == 1000) {
+        if(processID == Constants.EDIT_NOTE_VALUE) {
+            this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+            noteDetailsMainLayout = findViewById(R.id.noteDetailsMainLayout);
+            noteDetailsMainLayout.setFocusable(true);
+            noteDetailsMainLayout.setFocusableInTouchMode(true);
             setData(user.getId(),intent.getStringExtra(Constants.NOTE_ID_KEY));
         }
 
