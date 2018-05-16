@@ -38,6 +38,8 @@ public class NoteDetailsActivity extends AppCompatActivity {
     int processID;
     boolean doubleBackToExitPressedOnce = false;
     boolean isNoteEmpty = true;
+    ValueEventListener listener;
+    DatabaseReference notesDatabaseRef;
 
 
     @Override
@@ -90,6 +92,10 @@ public class NoteDetailsActivity extends AppCompatActivity {
                     editNote(user.getId(), intent.getStringExtra(Constants.NOTE_ID_KEY), noteTitle.getText().toString(), noteBody.getText().toString(), Calendar.getInstance().getTime());
                 }
             }
+            if (notesDatabaseRef != null && listener != null) {
+                notesDatabaseRef.removeEventListener(listener);
+            }
+
             return;
         }
 
@@ -113,33 +119,37 @@ public class NoteDetailsActivity extends AppCompatActivity {
 
     private void addNewNote(String userId, String title, String body, Date date) {
         DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy", Locale.UK);
-        DatabaseReference notesDatabaseRef = mDatabase.child("users").child(userId).child("notes").push();
+        notesDatabaseRef = mDatabase.child("users").child(userId).child("notes").push();
         NoteDetails noteDetails = new NoteDetails(title, body, formatter.format(date));
         notesDatabaseRef.setValue(noteDetails);
     }
 
     private void editNote(String userId,String noteID, String title, String body, Date date){
         DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy", Locale.UK);
-        DatabaseReference notesDatabaseRef = mDatabase.child("users").child(userId).child("notes").child(noteID);
+        notesDatabaseRef = mDatabase.child("users").child(userId).child("notes").child(noteID);
         NoteDetails noteDetails = new NoteDetails(title, body, formatter.format(date));
         notesDatabaseRef.setValue(noteDetails);
     }
 
     private void setData(String userId, String noteID){
-        DatabaseReference notesDatabaseRef = mDatabase.child("users").child(userId).child("notes").child(noteID);
-        notesDatabaseRef.addValueEventListener(new ValueEventListener() {
+        notesDatabaseRef = mDatabase.child("users").child(userId).child("notes").child(noteID);
+        listener = notesDatabaseRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot != null) {
                     noteDetails = dataSnapshot.getValue(NoteDetails.class);
                     noteDetails.setNoteID(dataSnapshot.getKey());
                     noteTitle.setText(noteDetails.getTitle());
                     noteBody.setText(noteDetails.getBody());
+                }
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 Log.e("The read failed: " ,databaseError.getMessage());
             }
+
         });
+
     }
 }
