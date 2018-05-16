@@ -3,12 +3,19 @@ package com.hardstudio.hasthi.notes.Adapters;
 import android.content.Context;
 import android.content.Intent;
 import android.support.constraint.ConstraintLayout;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
 import com.hardstudio.hasthi.notes.Models.NoteDetails;
 import com.hardstudio.hasthi.notes.NoteDetailsActivity;
 import com.hardstudio.hasthi.notes.NotesActivity;
@@ -21,10 +28,12 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
 
     private Context context;
     private List<NoteDetails> note;
+    private DatabaseReference notesDatabaseRef;
 
-    public NotesAdapter(Context context, List<NoteDetails> note) {
+    public NotesAdapter(Context context, List<NoteDetails> note, DatabaseReference notesDatabaseRef) {
         this.context = context;
         this.note = note;
+        this.notesDatabaseRef = notesDatabaseRef;
     }
 
 
@@ -48,6 +57,26 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
             }
         });
 
+        holder.noteBlock.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+
+                notesDatabaseRef.child(note.get(position).getNoteID()).addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        dataSnapshot.getRef().setValue(null);
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        Log.e("The read failed: " ,databaseError.getMessage());
+                    }
+                });
+
+                Toast.makeText(context, "Long Press", Toast.LENGTH_SHORT).show();
+                return true;
+            }
+        });
     }
 
     @Override

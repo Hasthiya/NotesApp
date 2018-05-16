@@ -116,7 +116,7 @@ public class NotesActivity extends AppCompatActivity {
 
     private void getData(String userId){
         Notes = new ArrayList<>();
-        DatabaseReference notesDatabaseRef = mDatabase.child("users").child(userId).child("notes");
+        final DatabaseReference notesDatabaseRef = mDatabase.child("users").child(userId).child("notes");
         notesDatabaseRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -130,7 +130,7 @@ public class NotesActivity extends AppCompatActivity {
                 }
                 notesRecyclerView = findViewById(R.id.notesRecyclerView);
                 notesRecyclerView.setLayoutManager(new LinearLayoutManager(NotesActivity.this));
-                adapter = new NotesAdapter(getApplicationContext(), Notes);
+                adapter = new NotesAdapter(getApplicationContext(), Notes, notesDatabaseRef);
                 notesRecyclerView.setAdapter(adapter);
 
             }
