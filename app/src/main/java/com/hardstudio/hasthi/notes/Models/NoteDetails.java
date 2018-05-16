@@ -10,6 +10,15 @@ public class NoteDetails {
     private String title;
     private String body;
     private String date;
+    private String noteID;
+
+    public String getNoteID() {
+        return noteID;
+    }
+
+    public void setNoteID(String noteID) {
+        this.noteID = noteID;
+    }
 
     public NoteDetails() {
     }

@@ -1,5 +1,6 @@
 package com.hardstudio.hasthi.notes;
 
+import android.content.Intent;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.hardstudio.hasthi.notes.Models.NoteDetails;
 import com.hardstudio.hasthi.notes.Models.User;
+import com.hardstudio.hasthi.notes.Util.Constants;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -39,7 +41,13 @@ public class NoteDetailsActivity extends AppCompatActivity {
         camButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                addNewNote(user.getId(), noteTitle.getText().toString(),noteBody.getText().toString(), Calendar.getInstance().getTime());
+                Intent intent = getIntent();
+                int processID = intent.getIntExtra(Constants.NOTE_PROCESS, 0);
+                if(processID == 2000) {
+                    addNewNote(user.getId(), noteTitle.getText().toString(), noteBody.getText().toString(), Calendar.getInstance().getTime());
+                } else if(processID == 1000) {
+                    editNote(user.getId(), intent.getStringExtra(Constants.NOTE_ID_KEY), noteTitle.getText().toString(), noteBody.getText().toString(), Calendar.getInstance().getTime());
+                }
             }
         });
 
@@ -57,6 +65,13 @@ public class NoteDetailsActivity extends AppCompatActivity {
     private void addNewNote(String userId, String title, String body, Date date) {
         DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy", Locale.UK);
         DatabaseReference notesDatabaseRef = mDatabase.child("users").child(userId).child("notes").push();
+        NoteDetails noteDetails = new NoteDetails(title, body, formatter.format(date));
+        notesDatabaseRef.setValue(noteDetails);
+    }
+
+    private void editNote(String userId,String noteID, String title, String body, Date date){
+        DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy", Locale.UK);
+        DatabaseReference notesDatabaseRef = mDatabase.child("users").child(userId).child("notes").child(noteID);
         NoteDetails noteDetails = new NoteDetails(title, body, formatter.format(date));
         notesDatabaseRef.setValue(noteDetails);
     }

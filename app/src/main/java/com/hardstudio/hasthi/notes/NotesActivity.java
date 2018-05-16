@@ -23,6 +23,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.hardstudio.hasthi.notes.Adapters.NotesAdapter;
 import com.hardstudio.hasthi.notes.Models.NoteDetails;
 import com.hardstudio.hasthi.notes.Models.User;
+import com.hardstudio.hasthi.notes.Util.Constants;
 
 import java.util.ArrayList;
 
@@ -83,7 +84,8 @@ public class NotesActivity extends AppCompatActivity {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 if(firebaseAuth.getCurrentUser() == null){
-                    startActivity(new Intent(NotesActivity.this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK));
+                    startActivity(new Intent(NotesActivity.this, MainActivity.class)
+                            .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_NEW_TASK));
                     finish();
                 }
             }
@@ -99,7 +101,8 @@ public class NotesActivity extends AppCompatActivity {
         newNoteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(NotesActivity.this, NoteDetailsActivity.class));
+                startActivity(new Intent(NotesActivity.this, NoteDetailsActivity.class)
+                        .putExtra(Constants.NOTE_PROCESS, Constants.NEW_NOTE_VALUE));
             }
         });
 
@@ -119,7 +122,11 @@ public class NotesActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Notes.clear();
                 for (DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
-                    Notes.add(postSnapshot.getValue(NoteDetails.class));
+
+                    NoteDetails noteDetails = postSnapshot.getValue(NoteDetails.class);
+                    noteDetails.setNoteID(postSnapshot.getKey());
+                    Notes.add(noteDetails);
+
                 }
                 notesRecyclerView = findViewById(R.id.notesRecyclerView);
                 notesRecyclerView.setLayoutManager(new LinearLayoutManager(NotesActivity.this));
