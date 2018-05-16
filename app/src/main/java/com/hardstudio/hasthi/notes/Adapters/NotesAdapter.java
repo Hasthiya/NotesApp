@@ -1,9 +1,11 @@
 package com.hardstudio.hasthi.notes.Adapters;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.constraint.ConstraintLayout;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,7 +20,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 import com.hardstudio.hasthi.notes.Models.NoteDetails;
 import com.hardstudio.hasthi.notes.NoteDetailsActivity;
-import com.hardstudio.hasthi.notes.NotesActivity;
 import com.hardstudio.hasthi.notes.R;
 import com.hardstudio.hasthi.notes.Util.Constants;
 
@@ -45,7 +46,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
     }
 
     @Override
-    public void onBindViewHolder(NotesAdapter.ViewHolder holder, final int position) {
+    public void onBindViewHolder(final NotesAdapter.ViewHolder holder, final int position) {
         holder.noteTitle.setText(note.get(position).getTitle());
         holder.noteBody.setText(note.get(position).getBody());
         holder.noteBlock.setOnClickListener(new View.OnClickListener() {
@@ -60,18 +61,42 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
         holder.noteBlock.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
+                holder.noteBlock.setBackgroundColor(context.getColor(R.color.colorAccent));
+                AlertDialog.Builder alert = new AlertDialog.Builder(
+                        context);
+                alert.setTitle("Delete");
+                alert.setMessage("Are you sure to delete this note?");
+                alert.setPositiveButton("YES", new DialogInterface.OnClickListener() {
 
-                notesDatabaseRef.child(note.get(position).getNoteID()).addValueEventListener(new ValueEventListener() {
                     @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        dataSnapshot.getRef().setValue(null);
-                    }
+                    public void onClick(DialogInterface dialog, int which) {
+                        notesDatabaseRef.child(note.get(position).getNoteID()).addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                dataSnapshot.getRef().setValue(null);
+                            }
 
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                        Log.e("The read failed: " ,databaseError.getMessage());
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+                                Log.e("The read failed: " ,databaseError.getMessage());
+                            }
+                        });
+                        dialog.dismiss();
+                        holder.noteBlock.setBackgroundColor(Color.TRANSPARENT);
+
                     }
                 });
+                alert.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        dialog.dismiss();
+                        holder.noteBlock.setBackgroundColor(Color.TRANSPARENT);
+                    }
+                });
+
+                alert.show();
 
                 Toast.makeText(context, "Long Press", Toast.LENGTH_SHORT).show();
                 return true;

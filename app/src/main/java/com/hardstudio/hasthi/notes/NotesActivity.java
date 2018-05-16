@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -130,7 +131,7 @@ public class NotesActivity extends AppCompatActivity {
                 }
                 notesRecyclerView = findViewById(R.id.notesRecyclerView);
                 notesRecyclerView.setLayoutManager(new LinearLayoutManager(NotesActivity.this));
-                adapter = new NotesAdapter(getApplicationContext(), Notes, notesDatabaseRef);
+                adapter = new NotesAdapter(NotesActivity.this, Notes, notesDatabaseRef);
                 notesRecyclerView.setAdapter(adapter);
 
             }
@@ -141,4 +142,6 @@ public class NotesActivity extends AppCompatActivity {
             }
         });
     }
+
+
 }
