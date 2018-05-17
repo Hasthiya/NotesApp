@@ -14,6 +14,8 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
@@ -64,7 +66,6 @@ public class NoteDetailsActivity extends AppCompatActivity {
     private static final int CAMERA_REQUEST_CODE = 1;
     private static final int CAMERA_PERMISSION_REQUEST_CODE = 10;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,6 +74,9 @@ public class NoteDetailsActivity extends AppCompatActivity {
 
         noteTitle = findViewById(R.id.noteTitle);
         noteBody = findViewById(R.id.noteBody);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
 
         final Intent intent = getIntent();
         processID = intent.getIntExtra(Constants.NOTE_PROCESS, 0);
@@ -126,6 +130,17 @@ public class NoteDetailsActivity extends AppCompatActivity {
             });
         }
 
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override
