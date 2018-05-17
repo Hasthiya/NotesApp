@@ -80,7 +80,11 @@ public class NoteDetailsActivity extends AppCompatActivity {
 
         final Intent intent = getIntent();
         processID = intent.getIntExtra(Constants.NOTE_PROCESS, 0);
+
         progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Uploading the Image");
+        progressDialog.setCanceledOnTouchOutside(false);
+
         storageReference = FirebaseStorage.getInstance().getReference();
         noteImage= findViewById(R.id.noteImage);
         camButton = findViewById(R.id.camButton);
