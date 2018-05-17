@@ -67,7 +67,7 @@ public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.ViewHolder> 
                         context);
                 alert.setCancelable(false);
                 alert.setTitle("Delete");
-                alert.setMessage("Are you sure to delete this note?");
+                alert.setMessage("Are you sure that you want to delete this note?");
                 alert.setPositiveButton("YES", new DialogInterface.OnClickListener() {
 
                     @Override
