@@ -190,46 +190,52 @@ public class NoteDetailsActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if(!noteTitle.getText().toString().equalsIgnoreCase("") && !noteBody.getText().toString().equalsIgnoreCase("") ){
-            isNoteEmpty = false;
-        } else {
-            isNoteEmpty = true;
-        }
-        if (doubleBackToExitPressedOnce) {
-            super.onBackPressed();
 
-            final Intent intent = getIntent();
-            processID = intent.getIntExtra(Constants.NOTE_PROCESS, 0);
+        if(!noteTitle.getText().toString().equalsIgnoreCase(noteDetails.getTitle()) || !noteBody.getText().toString().equalsIgnoreCase(noteDetails.getBody())) {
 
-            if(!noteTitle.getText().toString().equalsIgnoreCase("") && !noteBody.getText().toString().equalsIgnoreCase("") ){
-                if(processID == 2000) {
-                    addNewNote(user.getId(), noteTitle.getText().toString(), noteBody.getText().toString(), Calendar.getInstance().getTime(), ImageURL);
-                } else if(processID == 1000) {
-                    editNote(user.getId(), intent.getStringExtra(Constants.NOTE_ID_KEY), noteTitle.getText().toString(), noteBody.getText().toString(), Calendar.getInstance().getTime(), ImageURL);
+            if (!noteTitle.getText().toString().equalsIgnoreCase("") && !noteBody.getText().toString().equalsIgnoreCase("")) {
+                isNoteEmpty = false;
+            } else {
+                isNoteEmpty = true;
+            }
+            if (doubleBackToExitPressedOnce) {
+                super.onBackPressed();
+
+                final Intent intent = getIntent();
+                processID = intent.getIntExtra(Constants.NOTE_PROCESS, 0);
+
+                if (!noteTitle.getText().toString().equalsIgnoreCase("") && !noteBody.getText().toString().equalsIgnoreCase("")) {
+                    if (processID == 2000) {
+                        addNewNote(user.getId(), noteTitle.getText().toString(), noteBody.getText().toString(), Calendar.getInstance().getTime(), ImageURL);
+                    } else if (processID == 1000) {
+                        editNote(user.getId(), intent.getStringExtra(Constants.NOTE_ID_KEY), noteTitle.getText().toString(), noteBody.getText().toString(), Calendar.getInstance().getTime(), ImageURL);
+                    }
                 }
+                if (notesDatabaseRef != null && listener != null) {
+                    notesDatabaseRef.removeEventListener(listener);
+                }
+
+                return;
             }
-            if (notesDatabaseRef != null && listener != null) {
-                notesDatabaseRef.removeEventListener(listener);
+
+            this.doubleBackToExitPressedOnce = true;
+
+            if (isNoteEmpty) {
+                Snackbar.make(findViewById(R.id.noteDetailsMainLayout), "Note is INCOMPLETE and will NOT SAVE", Snackbar.LENGTH_SHORT).show();
+            } else {
+                Snackbar.make(findViewById(R.id.noteDetailsMainLayout), "Please click BACK again to SAVE and exit", Snackbar.LENGTH_SHORT).show();
             }
 
-            return;
-        }
+            new Handler().postDelayed(new Runnable() {
 
-        this.doubleBackToExitPressedOnce = true;
-
-        if(isNoteEmpty){
-            Snackbar.make(findViewById(R.id.noteDetailsMainLayout), "Note is INCOMPLETE and will NOT SAVE", Snackbar.LENGTH_SHORT).show();
+                @Override
+                public void run() {
+                    doubleBackToExitPressedOnce = false;
+                }
+            }, 2000);
         } else {
-            Snackbar.make(findViewById(R.id.noteDetailsMainLayout), "Please click BACK again to SAVE and exit", Snackbar.LENGTH_SHORT).show();
+            super.onBackPressed();
         }
-
-        new Handler().postDelayed(new Runnable() {
-
-            @Override
-            public void run() {
-                doubleBackToExitPressedOnce=false;
-            }
-        }, 2000);
     }
 
 

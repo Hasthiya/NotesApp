@@ -33,6 +33,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.hardstudio.hasthi.notes.Adapters.NotesAdapter;
 import com.hardstudio.hasthi.notes.Models.NoteDetails;
@@ -150,8 +151,10 @@ public class NotesActivity extends AppCompatActivity {
 
     private void getData(String userId){
         Notes = new ArrayList<>();
-        final DatabaseReference notesDatabaseRef = mDatabase.child("users").child(userId).child("notes");
-        notesDatabaseRef.addValueEventListener(new ValueEventListener() {
+        final DatabaseReference notesDatabaseAdapterRef = mDatabase.child("users").child(userId).child("notes");
+        final DatabaseReference notesDatabaseRef = FirebaseDatabase.getInstance().getReference();
+        Query query = notesDatabaseRef.child("users").child(userId).child("notes").orderByChild("date");
+        query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Notes.clear();
@@ -163,18 +166,20 @@ public class NotesActivity extends AppCompatActivity {
 
                 }
                 notesRecyclerView = findViewById(R.id.notesRecyclerView);
-                notesRecyclerView.setLayoutManager(new LinearLayoutManager(NotesActivity.this));
-                adapter = new NotesAdapter(NotesActivity.this, Notes, notesDatabaseRef);
+                LinearLayoutManager layoutManager = new LinearLayoutManager(NotesActivity.this);
+                layoutManager.setReverseLayout(true);
+                layoutManager.setStackFromEnd(true);
+                notesRecyclerView.setLayoutManager(layoutManager);
+                adapter = new NotesAdapter(NotesActivity.this, Notes, notesDatabaseAdapterRef);
                 notesRecyclerView.setAdapter(adapter);
-
             }
-
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 Log.e("The read failed: " ,databaseError.getMessage());
             }
         });
     }
+
 
     private void sendToLogin() {
         GoogleSignInClient mGoogleSignInClient ;
