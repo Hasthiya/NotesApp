@@ -191,7 +191,7 @@ public class NoteDetailsActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
 
-        if(!noteTitle.getText().toString().equalsIgnoreCase(noteDetails.getTitle()) || !noteBody.getText().toString().equalsIgnoreCase(noteDetails.getBody())) {
+        if(noteDetails != null && (!noteTitle.getText().toString().equalsIgnoreCase(noteDetails.getTitle()) || !noteBody.getText().toString().equalsIgnoreCase(noteDetails.getBody()))) {
 
             if (!noteTitle.getText().toString().equalsIgnoreCase("") && !noteBody.getText().toString().equalsIgnoreCase("")) {
                 isNoteEmpty = false;
